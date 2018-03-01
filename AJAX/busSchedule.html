@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bus Schedule</title>
+    <style>
+        #schedule { text-align: center; width: 400px; }
+        input { width: 120px; }
+        #info { background-color:aquamarine; border:1px solid black; margin:0.25em; }
+        .info { font-size: 1.5em; padding: 0.25em; }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+<div id="schedule">
+    <div id="info"><span class="info">Not Connected</span></div>
+    <div id="controls">
+        <input id="depart" value="Depart" type="button" onclick="result.depart()">
+        <input id="arrive" value="Arrive" type="button" onclick="result.arrive()" disabled="true">
+    </div>
+</div>
+<script>
+    function solve() {
+        let currentStop = 'depot';
+        let url = 'https://judgetests.firebaseio.com/schedule/';
+
+        return {
+            depart : function() {
+                $('#arrive').removeAttr('disabled');
+                $('#depart').attr('disabled', 'true');
+                 $.get(url + currentStop + '.json')
+                    .then(function (data) {
+                        $('.info').text(`Next stop ` +  data.name);
+                    })
+                    .catch();
+            },
+             arrive : function() {
+                 $('#depart').removeAttr('disabled');
+                 $('#arrive').attr('disabled', 'true');
+                    $.get(url + currentStop + '.json')
+                        .then(function (data) {
+                            currentStop = data.next;
+                            $('.info').text(`Arriving at ` +  data.name);
+                        })
+                            .catch();
+            }
+        };
+
+
+     //  function displayError() {
+     //      $('#depart').attr('disabled', 'disabled');
+     //      $('#arrive').attr('disabled', 'disabled');
+     //      $('.info').text("Error");
+     //   }
+
+    }
+    let result = solve();
+</script>
+</body>
+</html>
